@@ -6,8 +6,8 @@ using UnityEngine.InputSystem;
 
 public class UnitCommander : MonoBehaviour
 {
-    [SerializeField] private UnitSelectionHandler _unitSelectionHandler = null;
     [SerializeField] private LayerMask _layerMask = new LayerMask();
+    [SerializeField] private UnitSelectionHandler _unitSelectionHandler = null;
 
     private Camera _mainCamera;
 
@@ -24,6 +24,15 @@ public class UnitCommander : MonoBehaviour
 
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _layerMask))
             {
+                if (hit.transform.TryGetComponent<Targetable>(out Targetable target))
+                {
+                    if (!target.hasAuthority)
+                    {
+                        TryTarget(target);
+                        return;
+                    }
+                }
+
                 TryMove(hit.point);
             }
         }
@@ -34,6 +43,14 @@ public class UnitCommander : MonoBehaviour
         foreach (UnitBehaviour unit in _unitSelectionHandler.SelectedUnits)
         {
             unit.UnitMovement.CmdMove(position);
+        }
+    }
+    
+    private void TryTarget(Targetable target)
+    {
+        foreach (UnitBehaviour unit in _unitSelectionHandler.SelectedUnits)
+        {
+            unit.TargetHandler.CmdSetTarget(target);
         }
     }
 }
