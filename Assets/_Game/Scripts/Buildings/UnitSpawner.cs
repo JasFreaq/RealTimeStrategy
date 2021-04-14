@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
@@ -9,7 +10,30 @@ public class UnitSpawner : NetworkBehaviour, IPointerClickHandler
     [SerializeField] private GameObject _unitPrefab = null;
     [SerializeField] private Transform _unitSpawnPoint = null;
 
+    private Health _health;
+
+    private void Awake()
+    {
+        _health = GetComponent<Health>();
+    }
+
     #region Server
+
+    public override void OnStartServer()
+    {
+        _health.ServerRegisterOnDeath(ServerHandleDeath);
+    }
+
+    public override void OnStopServer()
+    {
+        _health.ServerDeregisterOnDeath(ServerHandleDeath);
+    }
+
+    [Server]
+    private void ServerHandleDeath()
+    {
+        //NetworkServer.Destroy(gameObject);
+    }
 
     [Command]
     private void CmdSpawnUnit()

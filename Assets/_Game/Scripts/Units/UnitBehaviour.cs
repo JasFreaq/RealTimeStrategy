@@ -12,6 +12,7 @@ public class UnitBehaviour : NetworkBehaviour
     
     private UnitMovement _unitMovementComp;
     private TargetHandler _targetHandler;
+    private Health _health;
     
     private static Action<UnitBehaviour> ServerOnUnitSpawn;
     private static Action<UnitBehaviour> ServerOnUnitDespawn;
@@ -39,6 +40,7 @@ public class UnitBehaviour : NetworkBehaviour
     {
         _unitMovementComp = GetComponent<UnitMovement>();
         _targetHandler = GetComponent<TargetHandler>();
+        _health = GetComponent<Health>();
     }
 
     public static void ServerRegisterOnUnitSpawn(Action<UnitBehaviour> action)
@@ -86,28 +88,33 @@ public class UnitBehaviour : NetworkBehaviour
     public override void OnStartServer()
     {
         ServerOnUnitSpawn?.Invoke(this);
+        _health.ServerRegisterOnDeath(ServerHandleDeath);
     }
 
     public override void OnStopServer()
     {
         ServerOnUnitDespawn?.Invoke(this);
+        _health.ServerDeregisterOnDeath(ServerHandleDeath);
     }
-    
+
+    [Server]
+    private void ServerHandleDeath()
+    {
+        NetworkServer.Destroy(gameObject);
+    }
+
     #endregion
 
     #region Client
 
-    public override void OnStartClient()
+    public override void OnStartAuthority()
     {
-        if (isClientOnly && hasAuthority)
-        {
-            AuthorityOnUnitSpawn?.Invoke(this);
-        }
+        AuthorityOnUnitSpawn?.Invoke(this);
     }
 
     public override void OnStopClient()
     {
-        if (isClientOnly && hasAuthority)
+        if (hasAuthority)
         {
             AuthorityOnUnitDespawn?.Invoke(this);
         }

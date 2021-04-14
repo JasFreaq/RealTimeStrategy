@@ -39,6 +39,13 @@ public class Health : NetworkBehaviour
     public override void OnStartServer()
     {
         _currentHealth = _maxHealth;
+
+        UnitBase.ServerRegisterOnPlayerDeath(ServerOnPlayerDeath);
+    }
+
+    public override void OnStopServer()
+    {
+        UnitBase.ServerDeregisterOnPlayerDeath(ServerOnPlayerDeath);
     }
 
     [Server]
@@ -53,6 +60,15 @@ public class Health : NetworkBehaviour
             {
                 _serverOnDeath?.Invoke();
             }
+        }
+    }
+
+    [Server]
+    private void ServerOnPlayerDeath(int ID)
+    {
+        if (connectionToClient.connectionId == ID)
+        {
+            NetworkServer.Destroy(gameObject);
         }
     }
 

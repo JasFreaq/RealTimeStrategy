@@ -24,15 +24,24 @@ public class UnitSelectionHandler : MonoBehaviour
     private void Start()
     {
         _mainCamera = Camera.main;
-        _player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();
+        //_player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();
+
+        UnitBehaviour.AuthorityRegisterOnUnitDespawn(AuthorityHandleUnitDespawn);
+        GameOverHandler.ClientRegisterOnGameOver(ClientHandleGameOver);
     }
 
     private void Update()
     {
         HandleSelection();
 
-        if (!_player)
+        if (!_player && NetworkClient.connection != null)
             _player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();
+    }
+
+    private void OnDestroy()
+    {
+        UnitBehaviour.AuthorityDeregisterOnUnitDespawn(AuthorityHandleUnitDespawn);
+        GameOverHandler.ClientDeregisterOnGameOver(ClientHandleGameOver);
     }
 
     public void HandleSelection()
@@ -118,5 +127,15 @@ public class UnitSelectionHandler : MonoBehaviour
             _selectedUnits.Add(unit);
             unit.Select();
         }
+    }
+
+    private void AuthorityHandleUnitDespawn(UnitBehaviour unit)
+    {
+        _selectedUnits.Remove(unit);
+    }
+
+    private void ClientHandleGameOver(string winnerName)
+    {
+        enabled = false;
     }
 }
