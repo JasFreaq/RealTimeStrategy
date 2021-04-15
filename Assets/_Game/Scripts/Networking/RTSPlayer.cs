@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
@@ -7,6 +6,8 @@ using UnityEngine;
 public class RTSPlayer : NetworkBehaviour
 {
     [SerializeField] private Building[] _buildings = new Building[0];
+    [SerializeField] private float _buildingRangeLimit = 5f;
+    [SerializeField] private LayerMask _buildingBlockLayer = new LayerMask();
 
     [SyncVar(hook = nameof(ClientHandleResourceUpdate))] 
     private int _resources = 500;
@@ -35,6 +36,28 @@ public class RTSPlayer : NetworkBehaviour
         _clientOnResourceUpdate -= action;
     }
 
+    public bool CanPlaceBuilding(int buildingID, Vector3 position)
+    {
+        if (TryFindBuilding(buildingID, out Building building))
+        {
+            BoxCollider buildingCollider = building.GetComponent<BoxCollider>();
+            if (!Physics.CheckBox(position + buildingCollider.center, buildingCollider.size / 2,
+                Quaternion.identity, _buildingBlockLayer))
+            {
+                foreach (Building ownedBuilding in _ownedBuildings)
+                {
+                    if ((ownedBuilding.transform.position - position).sqrMagnitude <=
+                        Mathf.Pow(_buildingRangeLimit, 2))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     #region Server
 
     public override void OnStartServer()
@@ -54,18 +77,19 @@ public class RTSPlayer : NetworkBehaviour
         Building.ServerDeregisterOnBuildingSpawn(ServerHandleBuildingSpawn);
         Building.ServerDeregisterOnBuildingDespawn(ServerHandleBuildingDespawn);
     }
-
+    
     [Command]
     public void CmdTryPlaceBuilding(int buildingID, Vector3 position)
     {
         if (TryFindBuilding(buildingID, out Building building))
         {
             GameObject buildingInstance = Instantiate(building, position, Quaternion.identity).gameObject;
-
             NetworkServer.Spawn(buildingInstance, connectionToClient);
+
+            _resources -= building.Price;
         }
     }
-
+    
     private void ServerHandleUnitSpawn(UnitBehaviour unit)
     {
         if (unit.connectionToClient.connectionId == connectionToClient.connectionId)

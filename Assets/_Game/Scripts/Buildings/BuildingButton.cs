@@ -50,13 +50,20 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
                 {
                     _buildingPreviewInstance.SetActive(true);
                 }
+
+                Color color = _player.CanPlaceBuilding(_building.ID, hit.point) ? Color.green : Color.red;
+                _buildingRendererInstance.material.color = color;
+            }
+            else
+            {
+                _buildingPreviewInstance.SetActive(false);
             }
         }
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
+        if (eventData.button == PointerEventData.InputButton.Left && _building.Price <= _player.Resources)
         {
             _buildingPreviewInstance = Instantiate(_building.BuildingPreview);
             _buildingRendererInstance = _buildingPreviewInstance.GetComponentInChildren<Renderer>();
@@ -71,9 +78,16 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
         {
             Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
+            //if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _floorMask) &&
+            //    _player.CanPlaceBuilding(_building.ID, hit.point)) 
+            //{
+            //    _player.CmdTryPlaceBuilding(_building.ID, hit.point);
+            //}
+            
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _floorMask))
             {
-                _player.CmdTryPlaceBuilding(_building.ID, hit.point);
+                if (_player.CanPlaceBuilding(_building.ID, hit.point))
+                    _player.CmdTryPlaceBuilding(_building.ID, hit.point);
             }
 
             Destroy(_buildingPreviewInstance);
