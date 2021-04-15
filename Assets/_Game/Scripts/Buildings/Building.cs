@@ -9,6 +9,7 @@ public class Building : NetworkBehaviour
     [SerializeField] private Sprite _icon = null;
     [SerializeField] private int _iD = -1;
     [SerializeField] private int _price = 100;
+    [SerializeField] private GameObject _buildingPreview = null;
 
     private static Action<Building> ServerOnBuildingSpawn;
     private static Action<Building> ServerOnBuildingDespawn;
@@ -19,6 +20,8 @@ public class Building : NetworkBehaviour
     public Sprite Icon { get { return _icon; } }
     public int ID { get { return _iD; } }
     public int Price { get { return _price; } }
+
+    public GameObject BuildingPreview { get { return _buildingPreview; } }
 
     public static void ServerRegisterOnBuildingSpawn(Action<Building> action)
     {

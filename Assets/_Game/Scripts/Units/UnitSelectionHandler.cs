@@ -8,8 +8,8 @@ using UnityEngine.UI;
 
 public class UnitSelectionHandler : MonoBehaviour
 {
-    [SerializeField] private LayerMask _layerMask = new LayerMask();
     [SerializeField] private RectTransform _selectionArea = null;
+    [SerializeField] private LayerMask _layerMask = new LayerMask();
 
     private Camera _mainCamera;
     

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
@@ -5,11 +6,30 @@ using UnityEngine;
 
 public class RTSPlayer : NetworkBehaviour
 {
+    [SerializeField] private Building[] _buildings = new Building[0];
+
+    [SyncVar(hook = nameof(ClientHandleResourceUpdate))] 
+    private int _resources = 500;
+
+    private Action<int> _clientOnResourceUpdate;
+
     private List<UnitBehaviour> _ownedUnits = new List<UnitBehaviour>();
     private List<Building> _ownedBuildings = new List<Building>();
 
+    public int Resources { get { return _resources; } }
+
     public IReadOnlyList<UnitBehaviour> OwnedUnits { get { return _ownedUnits; }}
     public IReadOnlyList<Building> OwnedBuildings { get { return _ownedBuildings; }}
+
+    public void ClientRegisterOnResourceUpdate(Action<int> action)
+    {
+        _clientOnResourceUpdate += action;
+    }
+    
+    public void ClientDeregisterOnResourceUpdate(Action<int> action)
+    {
+        _clientOnResourceUpdate -= action;
+    }
 
     #region Server
 
@@ -29,6 +49,17 @@ public class RTSPlayer : NetworkBehaviour
 
         Building.ServerDeregisterOnBuildingSpawn(ServerHandleBuildingSpawn);
         Building.ServerDeregisterOnBuildingDespawn(ServerHandleBuildingDespawn);
+    }
+
+    [Command]
+    public void CmdTryPlaceBuilding(int buildingID, Vector3 position)
+    {
+        if (TryFindBuilding(buildingID, out Building building))
+        {
+            GameObject buildingInstance = Instantiate(building, position, Quaternion.identity).gameObject;
+
+            NetworkServer.Spawn(buildingInstance, connectionToClient);
+        }
     }
 
     private void ServerHandleUnitSpawn(UnitBehaviour unit)
@@ -91,6 +122,11 @@ public class RTSPlayer : NetworkBehaviour
         }
     }
 
+    private void ClientHandleResourceUpdate(int oldResources, int newResources)
+    {
+        _clientOnResourceUpdate?.Invoke(newResources);
+    }
+
     private void AuthorityHandleUnitSpawn(UnitBehaviour unit)
     {
         _ownedUnits.Add(unit);
@@ -112,4 +148,20 @@ public class RTSPlayer : NetworkBehaviour
     }
 
     #endregion
+
+    private bool TryFindBuilding(int ID, out Building building)
+    {
+        building = null;
+
+        foreach (Building buildingType in _buildings)
+        {
+            if (buildingType.ID == ID)
+            {
+                building = buildingType;
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

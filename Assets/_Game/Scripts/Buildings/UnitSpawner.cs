@@ -17,8 +17,6 @@ public class UnitSpawner : NetworkBehaviour, IPointerClickHandler
         _health = GetComponent<Health>();
     }
 
-    #region Server
-
     public override void OnStartServer()
     {
         _health.ServerRegisterOnDeath(ServerHandleDeath);
@@ -29,10 +27,12 @@ public class UnitSpawner : NetworkBehaviour, IPointerClickHandler
         _health.ServerDeregisterOnDeath(ServerHandleDeath);
     }
 
+    #region Server
+    
     [Server]
     private void ServerHandleDeath()
     {
-        //NetworkServer.Destroy(gameObject);
+        NetworkServer.Destroy(gameObject);
     }
 
     [Command]
