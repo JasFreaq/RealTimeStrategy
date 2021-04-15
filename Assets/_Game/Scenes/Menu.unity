@@ -306,34 +306,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 593894634720840689, guid: 0f91ee05f975db845a622bb8c548251e, type: 3}
-      propertyPath: onlineScene
-      value: Assets/_Game/Scenes/Map_01.unity
-      objectReference: {fileID: 0}
-    - target: {fileID: 593894634720840689, guid: 0f91ee05f975db845a622bb8c548251e, type: 3}
-      propertyPath: offlineScene
-      value: Assets/_Game/Scenes/Menu.unity
-      objectReference: {fileID: 0}
-    - target: {fileID: 593894634720840689, guid: 0f91ee05f975db845a622bb8c548251e, type: 3}
-      propertyPath: spawnPrefabs.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 593894634720840689, guid: 0f91ee05f975db845a622bb8c548251e, type: 3}
-      propertyPath: spawnPrefabs.Array.data[1]
-      value: 
-      objectReference: {fileID: 8363383771905726624, guid: 637e392858d8b9a4791db9e332272b99, type: 3}
-    - target: {fileID: 593894634720840689, guid: 0f91ee05f975db845a622bb8c548251e, type: 3}
-      propertyPath: spawnPrefabs.Array.data[2]
-      value: 
-      objectReference: {fileID: 8363383771905726624, guid: f8ad789328134fc429773f05c9922a37, type: 3}
-    - target: {fileID: 593894634720840689, guid: 0f91ee05f975db845a622bb8c548251e, type: 3}
-      propertyPath: spawnPrefabs.Array.data[3]
-      value: 
-      objectReference: {fileID: 2685732074701216907, guid: 5f5fcef5d570116469035b95f790accd, type: 3}
-    - target: {fileID: 593894634720840689, guid: 0f91ee05f975db845a622bb8c548251e, type: 3}
-      propertyPath: spawnPrefabs.Array.data[4]
-      value: 
-      objectReference: {fileID: 994938099058694527, guid: eee7612e2357d0d4987ae10810db7486, type: 3}
     - target: {fileID: 593894634720840690, guid: 0f91ee05f975db845a622bb8c548251e, type: 3}
       propertyPath: m_Name
       value: Network Manager

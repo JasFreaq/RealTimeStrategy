@@ -7,6 +7,8 @@ using UnityEngine.Events;
 
 public class UnitBehaviour : NetworkBehaviour
 {
+    [SerializeField] private int _price = 25;
+
     [SerializeField] private UnityEvent _onSelected = null;
     [SerializeField] private UnityEvent _onDeselected = null;
     
@@ -20,21 +22,9 @@ public class UnitBehaviour : NetworkBehaviour
     private static Action<UnitBehaviour> AuthorityOnUnitSpawn;
     private static Action<UnitBehaviour> AuthorityOnUnitDespawn;
 
-    public UnitMovement UnitMovement
-    {
-        get
-        {
-            return _unitMovementComp;
-        }
-    }
-
-    public TargetHandler TargetHandler
-    {
-        get
-        {
-            return _targetHandler;
-        }
-    }
+    public int Price { get { return _price; } }
+    public UnitMovement UnitMovement { get { return _unitMovementComp; } }
+    public TargetHandler TargetHandler { get { return _targetHandler; } }
 
     private void Awake()
     {

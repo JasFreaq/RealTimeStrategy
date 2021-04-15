@@ -16,7 +16,11 @@ public class RTSPlayer : NetworkBehaviour
     private List<UnitBehaviour> _ownedUnits = new List<UnitBehaviour>();
     private List<Building> _ownedBuildings = new List<Building>();
 
-    public int Resources { get { return _resources; } }
+    public int Resources
+    {
+        get { return _resources; }
+        [Server] set { _resources = value; }
+    }
 
     public IReadOnlyList<UnitBehaviour> OwnedUnits { get { return _ownedUnits; }}
     public IReadOnlyList<Building> OwnedBuildings { get { return _ownedBuildings; }}

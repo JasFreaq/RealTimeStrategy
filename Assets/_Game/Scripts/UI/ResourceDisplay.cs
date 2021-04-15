@@ -5,7 +5,7 @@ using Mirror;
 using TMPro;
 using UnityEngine;
 
-public class ResourceHandler : MonoBehaviour
+public class ResourceDisplay : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _resourcesText = null;
 
