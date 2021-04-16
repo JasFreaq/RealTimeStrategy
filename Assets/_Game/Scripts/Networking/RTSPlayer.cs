@@ -14,6 +14,7 @@ public class RTSPlayer : NetworkBehaviour
 
     private Action<int> _clientOnResourceUpdate;
 
+    private Color _teamColor = new Color();
     private List<UnitBehaviour> _ownedUnits = new List<UnitBehaviour>();
     private List<Building> _ownedBuildings = new List<Building>();
 
@@ -23,8 +24,14 @@ public class RTSPlayer : NetworkBehaviour
         [Server] set { _resources = value; }
     }
 
-    public IReadOnlyList<UnitBehaviour> OwnedUnits { get { return _ownedUnits; }}
-    public IReadOnlyList<Building> OwnedBuildings { get { return _ownedBuildings; }}
+    public Color TeamColor
+    {
+        get { return _teamColor; }
+        [Server] set { _teamColor = value; }
+    }
+
+    public IReadOnlyList<UnitBehaviour> OwnedUnits { get { return _ownedUnits; } }
+    public IReadOnlyList<Building> OwnedBuildings { get { return _ownedBuildings; } }
 
     public void ClientRegisterOnResourceUpdate(Action<int> action)
     {

@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 2685732074701216906}
   - component: {fileID: 4831020362915999653}
   - component: {fileID: 7313346263941151338}
+  - component: {fileID: 490640182550607661}
   m_Layer: 7
   m_Name: Projectiile
   m_TagString: Untagged
@@ -148,3 +149,19 @@ MonoBehaviour:
   _launchForce: 500
   _damage: 20
   _lifetime: 7.5
+--- !u!114 &490640182550607661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2685732074701216907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30d6101cd49488c4481b9d7f28a8ee71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  _renderers:
+  - {fileID: 2685732074701216905}

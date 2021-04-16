@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FaceCamera : MonoBehaviour
+public class LookAtCamera : MonoBehaviour
 {
     private Transform _mainCameraTransform = null;
 
