@@ -68,7 +68,7 @@ MonoBehaviour:
   _buildings:
   - {fileID: 8363383771905726627, guid: f8ad789328134fc429773f05c9922a37, type: 3}
   - {fileID: 8363383771905726627, guid: 04446b6f7f523944ca11ba582ab8992e, type: 3}
-  _buildingRangeLimit: 5
+  _buildingRangeLimit: 25
   _buildingBlockLayer:
     serializedVersion: 2
     m_Bits: 321
@@ -89,8 +89,8 @@ MonoBehaviour:
   _playerCameraTransform: {fileID: 3620336701579577251}
   _speed: 20
   _screenBorderThickness: 10
-  _minScreenLimits: {x: -5, y: -15}
-  _maxScreenLimits: {x: 5, y: 0}
+  _minScreenLimits: {x: -40, y: -60}
+  _maxScreenLimits: {x: 40, y: 30}
 --- !u!1 &7108561968414806548
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,7 +107,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3620336701579577251
 Transform:
   m_ObjectHideFlags: 0
@@ -116,7 +116,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7108561968414806548}
   m_LocalRotation: {x: 0.38268343, y: 0, z: 0, w: 0.92387956}
-  m_LocalPosition: {x: 0, y: 10, z: 0}
+  m_LocalPosition: {x: 0, y: 20, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 344929713877138008}

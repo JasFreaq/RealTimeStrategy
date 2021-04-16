@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cinemachine;
 using Mirror;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ public class RTSPlayer : NetworkBehaviour
     private Color _teamColor = new Color();
     private List<UnitBehaviour> _ownedUnits = new List<UnitBehaviour>();
     private List<Building> _ownedBuildings = new List<Building>();
-
+    
     public int Resources
     {
         get { return _resources; }
@@ -33,6 +34,8 @@ public class RTSPlayer : NetworkBehaviour
     public IReadOnlyList<UnitBehaviour> OwnedUnits { get { return _ownedUnits; } }
     public IReadOnlyList<Building> OwnedBuildings { get { return _ownedBuildings; } }
 
+    public Transform MinimapCameraTransform { get { return transform.GetChild(0); } }
+    
     public void ClientRegisterOnResourceUpdate(Action<int> action)
     {
         _clientOnResourceUpdate += action;

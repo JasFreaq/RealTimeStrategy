@@ -5,7 +5,14 @@ using UnityEngine;
 
 public class TeamColorSetter : NetworkBehaviour
 {
-    [SerializeField] private Renderer[] _renderers = new Renderer[0];
+    [System.Serializable]
+    struct RenderSetting
+    {
+        public Renderer renderer;
+        public int materialIndex;
+    }
+
+    [SerializeField] private RenderSetting[] _renderSettings = new RenderSetting[0];
 
     [SyncVar(hook = nameof(HandleTeamColorUpdate))] 
     private Color _teamColor;
@@ -24,9 +31,17 @@ public class TeamColorSetter : NetworkBehaviour
 
     private void HandleTeamColorUpdate(Color oldColor, Color newColor)
     {
-        foreach (Renderer thisRenderer in _renderers)
+        foreach (RenderSetting renderSetting in _renderSettings)
         {
-            thisRenderer.material.color = _teamColor;
+            if (renderSetting.materialIndex == 0)
+            {
+                renderSetting.renderer.material.color = _teamColor;
+            }
+            else if (renderSetting.materialIndex > 0 &&
+                     renderSetting.materialIndex < renderSetting.renderer.materials.Length) 
+            {
+                renderSetting.renderer.materials[renderSetting.materialIndex].color = _teamColor;
+            }
         }
     }
 

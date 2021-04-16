@@ -18,7 +18,7 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
     private Camera _mainCamera;
     private RTSPlayer _player;
     private GameObject _buildingPreviewInstance;
-    private Renderer _buildingRendererInstance;
+    private Renderer[] _buildingRendererInstances;
 
     private void Start()
     {
@@ -52,7 +52,10 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
                 }
 
                 Color color = _player.CanPlaceBuilding(_building.ID, hit.point) ? Color.green : Color.red;
-                _buildingRendererInstance.material.color = color;
+                foreach (Renderer buildingRendererInstance in _buildingRendererInstances)
+                {
+                    buildingRendererInstance.material.color = color;
+                }
             }
             else
             {
@@ -66,7 +69,7 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
         if (eventData.button == PointerEventData.InputButton.Left && _building.Price <= _player.Resources)
         {
             _buildingPreviewInstance = Instantiate(_building.BuildingPreview);
-            _buildingRendererInstance = _buildingPreviewInstance.GetComponentInChildren<Renderer>();
+            _buildingRendererInstances = _buildingPreviewInstance.GetComponentsInChildren<Renderer>();
 
             _buildingPreviewInstance.SetActive(false);
         }
@@ -78,16 +81,10 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
         {
             Ray ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
 
-            //if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _floorMask) &&
-            //    _player.CanPlaceBuilding(_building.ID, hit.point)) 
-            //{
-            //    _player.CmdTryPlaceBuilding(_building.ID, hit.point);
-            //}
-            
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _floorMask))
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, _floorMask) &&
+                _player.CanPlaceBuilding(_building.ID, hit.point))
             {
-                if (_player.CanPlaceBuilding(_building.ID, hit.point))
-                    _player.CmdTryPlaceBuilding(_building.ID, hit.point);
+                _player.CmdTryPlaceBuilding(_building.ID, hit.point);
             }
 
             Destroy(_buildingPreviewInstance);
