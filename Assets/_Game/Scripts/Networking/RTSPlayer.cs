@@ -10,19 +10,38 @@ public class RTSPlayer : NetworkBehaviour
     [SerializeField] private float _buildingRangeLimit = 5f;
     [SerializeField] private LayerMask _buildingBlockLayer = new LayerMask();
 
+    [SyncVar(hook = nameof(ClientHandleNameUpdate))]
+    private string _displayName;
     [SyncVar(hook = nameof(ClientHandleResourceUpdate))] 
     private int _resources = 500;
+    [SyncVar(hook = nameof(AuthorityHandlePartyOwnerUpdate))] 
+    private bool _partyOwner = false;
 
     private Action<int> _clientOnResourceUpdate;
+
+    private static Action ClientOnInfoUpdate;
+    private static Action<bool> AuthorityOnPartyOwnerUpdate;
 
     private Color _teamColor = new Color();
     private List<UnitBehaviour> _ownedUnits = new List<UnitBehaviour>();
     private List<Building> _ownedBuildings = new List<Building>();
-    
+
+    public string DisplayName
+    {
+        get { return _displayName; }
+        [Server] set { _displayName = value; }
+    }
+
     public int Resources
     {
         get { return _resources; }
         [Server] set { _resources = value; }
+    }
+
+    public bool IsPartyOwner
+    {
+        get { return _partyOwner; }
+        [Server] set { _partyOwner = value; }
     }
 
     public Color TeamColor
@@ -36,16 +55,6 @@ public class RTSPlayer : NetworkBehaviour
 
     public Transform MinimapCameraTransform { get { return transform.GetChild(0); } }
     
-    public void ClientRegisterOnResourceUpdate(Action<int> action)
-    {
-        _clientOnResourceUpdate += action;
-    }
-    
-    public void ClientDeregisterOnResourceUpdate(Action<int> action)
-    {
-        _clientOnResourceUpdate -= action;
-    }
-
     public bool CanPlaceBuilding(int buildingID, Vector3 position)
     {
         if (TryFindBuilding(buildingID, out Building building))
@@ -68,10 +77,28 @@ public class RTSPlayer : NetworkBehaviour
         return false;
     }
 
+    private bool TryFindBuilding(int ID, out Building building)
+    {
+        building = null;
+
+        foreach (Building buildingType in _buildings)
+        {
+            if (buildingType.ID == ID)
+            {
+                building = buildingType;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     #region Server
 
     public override void OnStartServer()
     {
+        DontDestroyOnLoad(gameObject);
+
         UnitBehaviour.ServerRegisterOnUnitSpawn(ServerHandleUnitSpawn);
         UnitBehaviour.ServerRegisterOnUnitDespawn(ServerHandleUnitDespawn);
 
@@ -87,7 +114,16 @@ public class RTSPlayer : NetworkBehaviour
         Building.ServerDeregisterOnBuildingSpawn(ServerHandleBuildingSpawn);
         Building.ServerDeregisterOnBuildingDespawn(ServerHandleBuildingDespawn);
     }
-    
+
+    [Command]
+    public void CmdStartGame()
+    {
+        if (_partyOwner)
+        {
+            ((RTSNetworkManager) NetworkManager.singleton).StartGame();
+        }
+    }
+
     [Command]
     public void CmdTryPlaceBuilding(int buildingID, Vector3 position)
     {
@@ -148,21 +184,51 @@ public class RTSPlayer : NetworkBehaviour
         }
     }
 
-    public override void OnStopClient()
+    public override void OnStartClient()
     {
-        if (isClientOnly && hasAuthority)
+        if (!NetworkServer.active)
         {
-            UnitBehaviour.AuthorityDeregisterOnUnitSpawn(AuthorityHandleUnitSpawn);
-            UnitBehaviour.AuthorityDeregisterOnUnitDespawn(AuthorityHandleUnitDespawn);
+            DontDestroyOnLoad(gameObject);
 
-            Building.AuthorityDeregisterOnBuildingSpawn(AuthorityHandleBuildingSpawn);
-            Building.AuthorityDeregisterOnBuildingDespawn(AuthorityHandleBuildingDespawn);
+            ((RTSNetworkManager) NetworkManager.singleton).Players.Add(this);
         }
     }
 
+    public override void OnStopClient()
+    {
+        if (isClientOnly)
+        {
+            ((RTSNetworkManager)NetworkManager.singleton).Players.Remove(this);
+
+            if (hasAuthority) 
+            {
+                UnitBehaviour.AuthorityDeregisterOnUnitSpawn(AuthorityHandleUnitSpawn);
+                UnitBehaviour.AuthorityDeregisterOnUnitDespawn(AuthorityHandleUnitDespawn);
+
+                Building.AuthorityDeregisterOnBuildingSpawn(AuthorityHandleBuildingSpawn);
+                Building.AuthorityDeregisterOnBuildingDespawn(AuthorityHandleBuildingDespawn);
+            }
+
+            ClientOnInfoUpdate?.Invoke();
+        }
+    }
+
+    private void ClientHandleNameUpdate(string oldName, string newName)
+    {
+        ClientOnInfoUpdate?.Invoke();
+    }
+    
     private void ClientHandleResourceUpdate(int oldResources, int newResources)
     {
         _clientOnResourceUpdate?.Invoke(newResources);
+    }
+
+    private void AuthorityHandlePartyOwnerUpdate(bool wasOwner, bool isOwner)
+    {
+        if (hasAuthority)
+        {
+            AuthorityOnPartyOwnerUpdate?.Invoke(isOwner);
+        }
     }
 
     private void AuthorityHandleUnitSpawn(UnitBehaviour unit)
@@ -186,20 +252,38 @@ public class RTSPlayer : NetworkBehaviour
     }
 
     #endregion
+    
+    #region Observer Registration Functions
 
-    private bool TryFindBuilding(int ID, out Building building)
+    public void ClientRegisterOnResourceUpdate(Action<int> action)
     {
-        building = null;
-
-        foreach (Building buildingType in _buildings)
-        {
-            if (buildingType.ID == ID)
-            {
-                building = buildingType;
-                return true;
-            }
-        }
-
-        return false;
+        _clientOnResourceUpdate += action;
     }
+
+    public void ClientDeregisterOnResourceUpdate(Action<int> action)
+    {
+        _clientOnResourceUpdate -= action;
+    }
+
+    public static void ClientRegisterOnInfoUpdate(Action action)
+    {
+        ClientOnInfoUpdate += action;
+    }
+
+    public static void ClientDeregisterOnInfoUpdate(Action action)
+    {
+        ClientOnInfoUpdate -= action;
+    }
+    
+    public static void AuthorityRegisterOnPartyUpdate(Action<bool> action)
+    {
+        AuthorityOnPartyOwnerUpdate += action;
+    }
+
+    public static void AuthorityDeregisterOnPartyUpdate(Action<bool> action)
+    {
+        AuthorityOnPartyOwnerUpdate -= action;
+    }
+
+    #endregion
 }

@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 593894634720840694}
   - component: {fileID: 593894634720840689}
   - component: {fileID: 593894634720840688}
-  - component: {fileID: 593894634720840691}
+  - component: {fileID: 1943723675}
+  - component: {fileID: 1943723674}
   m_Layer: 0
   m_Name: Network Manager
   m_TagString: Untagged
@@ -53,8 +54,8 @@ MonoBehaviour:
   serverBatching: 1
   serverBatchInterval: 0
   offlineScene: Assets/_Game/Scenes/Menu.unity
-  onlineScene: Assets/_Game/Scenes/Map_01.unity
-  transport: {fileID: 593894634720840688}
+  onlineScene: 
+  transport: {fileID: 1943723674}
   networkAddress: localhost
   maxConnections: 100
   disconnectInactiveConnections: 0
@@ -79,7 +80,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 593894634720840690}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b0fecffa3f624585964b0d0eb21b18e, type: 3}
   m_Name: 
@@ -94,7 +95,7 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
---- !u!114 &593894634720840691
+--- !u!114 &1943723675
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -103,9 +104,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 593894634720840690}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showGUI: 1
-  offsetX: 0
-  offsetY: 0
+--- !u!114 &1943723674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 593894634720840690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea368fb6f27ec2f40a40e20977992b9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Channels: 0200000001000000
+  Timeout: 25
+  SteamAppID: 480
+  AllowSteamRelay: 1
+  UseNextGenSteamNetworking: 1
+  SteamUserID: 0

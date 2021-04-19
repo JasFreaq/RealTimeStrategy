@@ -26,14 +26,13 @@ public class BuildingButton : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
         _iconImage.sprite = _building.Icon;
         _priceText.text = _building.Price.ToString();
+
+        _player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();
     }
 
     private void Update()
     {
         UpdateBuildingPreview();
-
-        if (!_player && NetworkClient.connection != null)
-            _player = NetworkClient.connection.identity.GetComponent<RTSPlayer>();
     }
 
     private void UpdateBuildingPreview()
